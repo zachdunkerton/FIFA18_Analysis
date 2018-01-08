@@ -1,6 +1,6 @@
 import pandas as pd 
 #reads in data
-fifa = pd.read_csv("C:/Users/Zach Dunkerton/Documents/Towson/Fall 2017/COSC 757/Final Project/ingame positions/top_ingame.csv")
+fifa = pd.read_csv("C:/Users/zdunkerton/Documents/FIFA18_Analysis/ingame_positions/mid_ingame.csv")
 
 labels = fifa["overall"]
 #ten bins
@@ -50,27 +50,39 @@ while (i < len(fifa)):
 #need to change this
 data = fifa.iloc[0:len(fifa), 3:36]
 cols = data.columns.values
-print(cols)
-print(len(fifa))
 from sklearn.model_selection import train_test_split
 
 features_train, features_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.3, random_state=42)
 
-from sklearn.tree import DecisionTreeClassifier
+
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-clf = DecisionTreeClassifier()
-clf.fit(features_train, labels_train)
-pred = clf.predict(features_test)
+from sklearn.ensemble import RandomForestClassifier
+rnd_clf = RandomForestClassifier(n_estimators = 10, min_samples_split = 10,min_samples_leaf = 5)
+from sklearn.tree import DecisionTreeClassifier
+dt_clf = DecisionTreeClassifier(max_depth=10)
+from sklearn.neighbors import KNeighborsClassifier
+knn_clf = KNeighborsClassifier(n_neighbors=10, weights="distance")
+
+from sklearn.ensemble import VotingClassifier
+voting_clf=VotingClassifier(estimators=[('rnd',rnd_clf),('dt',dt_clf),('knn',knn_clf)],voting='hard')
+voting_clf.fit(features_train, labels_train)
+pred = voting_clf.predict(features_test)
+print("_______________Soft Vote________________")
+print(accuracy_score(labels_test, pred))
+
+
+dt_clf.fit(features_train, labels_train)
+pred = dt_clf.predict(features_test)
 print("_______________Decision Tree________________")
 print(accuracy_score(labels_test, pred))
 #print(precision_score(labels_test, pred, average = 'micro'))
 #print(recall_score(labels_test, pred, average = 'micro'))
 #print(f1_score(labels_test, pred, average = 'micro'))
 #print(classification_report(labels_test, pred))
-importance = clf.feature_importances_
+importance = dt_clf.feature_importances_
 stuff = []
 i= 0
 while i < len(cols):
@@ -82,33 +94,39 @@ while i < len(stuff):
     #print(stuff[i][0], ":", stuff[i][1])
     i+=1
 
-#from sklearn.neighbors import KNeighborsClassifier
-#clf = KNeighborsClassifier(n_neighbors=10, weights="distance")
-#clf.fit(features_train, labels_train)
-#pred = clf.predict(features_test)
 
-#print("_______________KNN________________")
-#print(accuracy_score(labels_test, pred))
+knn_clf.fit(features_train, labels_train)
+pred = knn_clf.predict(features_test)
+print("_______________KNN________________")
+print(accuracy_score(labels_test, pred))
 #print(precision_score(labels_test, pred, average = 'micro'))
 #print(recall_score(labels_test, pred, average = 'micro'))
 #print(f1_score(labels_test, pred, average = 'micro'))
 
-#from sklearn.svm import SVC
-#clf = SVC()
-#clf.fit(features_train, labels_train)
-#pred = clf.predict(features_test)
-#print("_______________SVM_______________")
-#print(accuracy_score(labels_test, pred))
+rnd_clf.fit(features_train, labels_train)
+pred = rnd_clf.predict(features_test)
+print("_______________Random Forest_______________")
+print(accuracy_score(labels_test, pred))
 #print(precision_score(labels_test, pred, average = 'micro'))
 #print(recall_score(labels_test, pred, average = 'micro'))
 #print(f1_score(labels_test, pred, average = 'micro'))
 
-#from sklearn.ensemble import RandomForestClassifier
-#clf = RandomForestClassifier(n_estimators = 10, min_samples_split = 10,min_samples_leaf = 5)
-#clf.fit(features_train, labels_train)
-#pred = clf.predict(features_test)
-#print("_______________Random Forest_______________")
+from sklearn.ensemble import BaggingClassifier
+
+#bag_clf = BaggingClassifier(DecisionTreeClassifier(max_depth=10), n_estimators=500, bootstrap=True, oob_score=True)
+#bag_clf.fit(data, labels)
+#print("_______________Bagging________________")
+#print("OOB Score: ", bag_clf.oob_score_)
+
+#from sklearn.ensemble import AdaBoostClassifier
+#ada_clf=AdaBoostClassifier(DecisionTreeClassifier(max_depth=10), n_estimators=500, algorithm='SAMME.R', learning_rate=.8)
+#ada_clf.fit(features_train, labels_train)
+#pred = ada_clf.predict(features_test)
+#print("_______________AdaBoost Tree_______________")
 #print(accuracy_score(labels_test, pred))
-#print(precision_score(labels_test, pred, average = 'micro'))
-#print(recall_score(labels_test, pred, average = 'micro'))
-#print(f1_score(labels_test, pred, average = 'micro'))
+
+from sklearn.decomposition import PCA
+pca = PCA(n_components=5)
+pca.fit(data)
+print(pca.explained_variance_ratio_)
+
