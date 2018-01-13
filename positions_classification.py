@@ -1,6 +1,6 @@
 #This code classifies players by position based on in-game stats. 
 #the data is first read in, then passed through a Random Forest and KNN classifier 
-#information is extracted from each of these anlgorithms
+#information is extracted from each of these algorithms
 
 import pandas as pd
 import numpy as np
@@ -34,7 +34,7 @@ from sklearn.ensemble import RandomForestClassifier, VotingClassifier, BaggingCl
 rnd_clf = RandomForestClassifier(n_estimators = 250, min_samples_split = 10,min_samples_leaf = 5, max_depth=7, oob_score = True)
 rnd_clf.fit(data, fifa["position"])
 print("_______________Random Forest_______________")
-print(rnd.clf.oob_score_)
+print(rnd_clf.oob_score_)
 features = []
 #print out the feature importances
 i= 0
