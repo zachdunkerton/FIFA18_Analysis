@@ -32,6 +32,6 @@ result = result.sort_values('overall', ascending=False)
 #remove duplicates:some players have more than one prefered position
 result = result.drop_duplicates('name')
 #put the ingame stats and name into a new data set
-result = result.loc[:,["name", "acceleration","sprint_speed", "positioning","finishing","shot_power","long_shots","volleys","penalties","vision","crossing","free_kick_accuracy","short_passing","long_passing","curve","agility","balance","reactions","ball_control","dribbling","composure","interceptions","heading_accuracy","marking","standing_tackle","sliding_tackle","jumping","stamina","strength","aggression", "position"]]
+result = result.loc[:,["name","club_logo","flag","photo" ,"acceleration","sprint_speed", "positioning","finishing","shot_power","long_shots","volleys","penalties","vision","crossing","free_kick_accuracy","short_passing","long_passing","curve","agility","balance","reactions","ball_control","dribbling","composure","interceptions","heading_accuracy","marking","standing_tackle","sliding_tackle","jumping","stamina","strength","aggression", "position"]]
 #need the encoding for the names because they have special characters
 result.to_csv("./more_positions_data.csv", encoding = 'utf-8')
